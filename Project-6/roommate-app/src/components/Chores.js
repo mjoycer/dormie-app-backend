@@ -1,14 +1,25 @@
 import axios from "axios";
 import { Button, Card, Badge, Container } from "react-bootstrap";
-import {AiFillCheckCircle} from 'react-icons/ai';
+import { AiFillCheckCircle } from 'react-icons/ai';
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { useEffect } from "react";
 
 const Chores = () => {
     const chores = useSelector(state => state.chores);
     const users = useSelector(state => state.users);
     const currentUser = useSelector(state => state.loggedInUser);
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        axios.get('http://localhost:8000/users', { headers: { Authorization: `Bearer ${currentUser.token}` } }).then(res => {
+            dispatch({ type: 'SET_USERS', payload: res.data });
+        });
+
+        axios.get('http://localhost:8000/chores', { headers: { Authorization: `Bearer ${currentUser.token}` } }).then(res => {
+            dispatch({ type: 'SET_CHORES', payload: res.data });
+        });
+
+    }, []);
 
     const pendingToDone = (e) => {
         axios.put(`http://localhost:8000/chores/${e.target.value}`, { status: 'Done' }, { headers: { Authorization: `Bearer ${currentUser.token}` } }).then(res => {
@@ -23,7 +34,6 @@ const Chores = () => {
             <div className="sectionHeader">
                 <h3>CHORES</h3>
             </div>
-            {/* <div className=" d-flex"> */}
             <div className="choresContainer d-flex flex-nowrap">
                 {chores.length > 0 ?
                     chores.map(chore => {
@@ -41,7 +51,7 @@ const Chores = () => {
                                             variant="outline-success"
                                             className="checkIcon"
                                             value={chore._id}
-                                            onClick={(e) => pendingToDone(e)}> 
+                                            onClick={(e) => pendingToDone(e)}>
                                             Done
                                         </Button>
                                         : null}

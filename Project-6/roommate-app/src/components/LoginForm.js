@@ -4,8 +4,6 @@ import { useDispatch } from "react-redux";
 import { useHistory } from "react-router";
 import { Link } from "react-router-dom";
 import { Button } from 'react-bootstrap';
-import jwt_decode from 'jwt-decode';
-
 
 const LoginForm = () => {
     const [user, setUser] = useState();
@@ -18,7 +16,6 @@ const LoginForm = () => {
         setUser({ ...user, [name]: e.target.value });
     }
 
-    // console.log(user);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -29,8 +26,6 @@ const LoginForm = () => {
         });
     }
 
-    // console.log(user);
-
     return (
         <>
             <div className="landingPage d-flex flex-column align-items-center justify-content-center flex-wrap center">
@@ -40,7 +35,6 @@ const LoginForm = () => {
                 </div>
 
                 <form className="d-grid gap-3" onSubmit={handleSubmit}>
-                    {/* <label htmlFor="email">Email:</label>  */}
                     <input
                         type="email"
                         name="email"
@@ -48,7 +42,6 @@ const LoginForm = () => {
                         onChange={(e) => handleInput(e)}
                         required />
 
-                    {/* <label htmlFor="password"> Password: </label>  */}
                     <input
                         type="password"
                         name="password"

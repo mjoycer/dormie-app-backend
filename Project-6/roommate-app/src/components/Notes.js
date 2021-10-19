@@ -1,7 +1,8 @@
 import axios from "axios";
 import { useState } from "react";
-import { Button, Modal, Row, Col, Card, Container} from "react-bootstrap";
+import { Button, Card, Container } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
 
 const Notes = () => {
     const notes = useSelector(state => state.notes);
@@ -9,6 +10,17 @@ const Notes = () => {
     const currentUser = useSelector(state => state.loggedInUser);
     const [show, setShow] = useState(false);
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        axios.get('http://localhost:8000/users', { headers: { Authorization: `Bearer ${currentUser.token}` } }).then(res => {
+            dispatch({ type: 'SET_USERS', payload: res.data });
+        });
+
+        axios.get('http://localhost:8000/notes', { headers: { Authorization: `Bearer ${currentUser.token}` } }).then(res => {
+            dispatch({ type: 'SET_NOTES', payload: res.data });
+        });
+
+    }, [currentUser.token, dispatch]);
 
     const removeNote = (e) => {
         axios.delete(`http://localhost:8000/notes/${e.target.value}`, { headers: { Authorization: `Bearer ${currentUser.token}` } }).then(res => {
@@ -18,9 +30,6 @@ const Notes = () => {
             });
         });
     }
-
-
-    console.log(currentUser.id);
 
     return (
         <Container>
@@ -32,24 +41,23 @@ const Notes = () => {
                     {(notes.length > 0) ?
                         notes.map(note => {
                             let author = users.find(user => user._id === note.author);
+                            console.log(author);
                             let current = users.find(user => user._id === currentUser.id);
-                            console.log(current);
-                            console.log(author._id);
                             return (
                                 <Card className="m-2" bg="info" >
                                     <Card.Body>
                                         <Card.Title>{author.name}</Card.Title>
                                         <Card.Subtitle className="mb-2 text-muted">{new Date(note.createdAt).toLocaleString()}</Card.Subtitle>
                                         <Card.Text>{note.message}</Card.Text>
-                                    {current._id === author._id || current.role === "leader" ?
-                                        <div className="text-center">
+                                        {current._id === author._id || current.role === "leader" ?
+                                            <div className="text-center">
                                                 <Button variant="outline-danger" value={note._id} onClick={(e) => removeNote(e)}>Remove</Button>
-                                            {/* <div className="col">
+                                                {/* <div className="col">
                                                 <Button value={note._id} >Edit</Button>
                                             </div> */}
-                                        </div>
-                                        : null
-                                    }
+                                            </div>
+                                            : null
+                                        }
                                     </Card.Body>
                                 </Card>
                             );

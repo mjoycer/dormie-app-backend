@@ -9,6 +9,7 @@ const NewBillForm = () => {
     const [allUsers, setAllUsers] = useState(users);
     const [newBill, setNewBill] = useState([]);
     const [isNecessity, setIsNecessity] = useState();
+    const currentUser = useSelector(state => state.loggedInUser);
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -16,9 +17,9 @@ const NewBillForm = () => {
     }, [users]);
 
     useEffect(() => {
-        if( isNecessity ) {
+        if (isNecessity) {
             setTaggedUsers(users.map(user => user._id))
-        }else{
+        } else {
             setTaggedUsers([]);
         }
     }, [isNecessity])
@@ -43,9 +44,9 @@ const NewBillForm = () => {
                 amount: newBill.amount,
                 dueDate: newBill.deadline,
                 isNecessity: isNecessity,
-                users: taggedUsers
-            }).then(res => {
-                axios.get('http://localhost:8000/bills').then(res => {
+                unpaidUsers: taggedUsers
+            }, { headers: { Authorization: `Bearer ${currentUser.token}` } }).then(res => {
+                axios.get('http://localhost:8000/bills', { headers: { Authorization: `Bearer ${currentUser.token}` } }).then(res => {
                     console.log(res.data);
                     dispatch({ type: 'SET_BILLS', payload: res.data });
                 });
@@ -67,36 +68,34 @@ const NewBillForm = () => {
         setIsNecessity(e.target.checked);
     }
 
-    // console.log(newBill)
-
     return (
         <Container className="newNoteFormContainer">
-        <form className="d-flex flex-column flex-wrap" onSubmit={handleSubmit}>
-            Bill: <input required type="text" name="name" onChange={(e) => { handleInput(e) }} />
-            Amount: <input required type="number" name="amount" onChange={(e) => { handleInput(e) }} />
-            Due Date: <input required type="date" name="deadline" onChange={(e) => { handleInput(e) }} />
-            <label htmlFor="isNecessity">Necessity?</label>
-             <input type="checkbox" name="isNecessity" onChange={(e) => checkboxHandler(e)} /> 
-            { (!isNecessity) && <div>
-            Users: 
-            {users.map(user =>
-                taggedUsers.includes(user._id) &&
-                <Badge>{user.name}
-                    <Button className="btn-danger" type="button" value={user._id} onClick={(e) => removeUser(e)}>x</Button>
-                </Badge>)
-            }
-            {allUsers.map(user => {
-                return (
-               
+            <form className="d-flex flex-column flex-wrap" onSubmit={handleSubmit}>
+                Bill: <input required type="text" name="name" onChange={(e) => { handleInput(e) }} />
+                Amount: <input required type="number" name="amount" onChange={(e) => { handleInput(e) }} />
+                Due Date: <input required type="date" name="deadline" onChange={(e) => { handleInput(e) }} />
+                <label htmlFor="isNecessity">Necessity?</label>
+                <input type="checkbox" name="isNecessity" onChange={(e) => checkboxHandler(e)} />
+                {(!isNecessity) && <div>
+                    Users:
+                    {users.map(user =>
+                        taggedUsers.includes(user._id) &&
                         <Badge>{user.name}
-                           <Button className="mx-1" variant="outline-primary" type="button" value={user._id} onClick={(e) => addUser(e)}> +</Button>
-                        </Badge>
-    
-                )
-            })}
-            </div>}
-            <input type="submit" value="Add Bill" />
-        </form>
+                            <Button className="btn-danger" type="button" value={user._id} onClick={(e) => removeUser(e)}>x</Button>
+                        </Badge>)
+                    }
+                    {allUsers.map(user => {
+                        return (
+
+                            <Badge>{user.name}
+                                <Button className="mx-1" variant="outline-primary" type="button" value={user._id} onClick={(e) => addUser(e)}> +</Button>
+                            </Badge>
+
+                        )
+                    })}
+                </div>}
+                <input type="submit" value="Add Bill" />
+            </form>
         </Container>
     )
 }
