@@ -1,19 +1,19 @@
 const express = require('express');
 const app = express();
-const port = 8000;
+const port = process.env.PORT || 8000;
 
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const cors =  require('cors');
+const cors = require('cors');
 
 app.use(bodyParser.json());
 app.use(cors());
 
-mongoose.connect('mongodb://localhost:27017/roommateApp', 
-{
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-});
+mongoose.connect('mongodb+srv://uplift_joyce2021:uplift2021@cluster0.3amhf.mongodb.net/mjoycer-db-001?retryWrites=true&w=majority',
+    {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+    });
 
 const UsersRouter = require('./routes/users');
 const NotesRouter = require('./routes/notes');
@@ -25,6 +25,6 @@ app.use('/notes', NotesRouter);
 app.use('/chores', ChoresRouter);
 app.use('/bills', BillsRouter);
 
-app.get('/', (req, res) => {res.send('Welcome to back-end haha'); });
+app.get('/', (req, res) => { res.send('Welcome to back-end haha'); });
 
-app.listen(port, () => console.log(`Express app is listening to port ${port}`) );
+app.listen(port, () => console.log(`Express app is listening to port ${port}`));

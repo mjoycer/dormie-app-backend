@@ -5,36 +5,6 @@ const UserBills = require('../models/userBills');
 const bcrypt = require('bcrypt');
 const auth = require('../auth');
 
-// router.get('/', auth.verify, (req, res) => {
-//     Users.aggregate([{
-//         $lookup: {
-//             from: "bills",
-//             localField: "_id",
-//             foreignField: "users",
-//             as: "bills"
-//         }
-//     }]).then(data => { res.send(data) });
-// });
-
-// router.get('/bills', auth.verify, (req, res) => {
-//     Users.aggregate([
-//         {
-//             $lookup: {
-//                 from: "bills",
-//                 localField: "_id",
-//                 foreignField: "users",
-//                 as: "bills"
-//             }
-//         }, 
-//         {
-//             $merge: { into: "user-bills" }
-//         }]).then(data => {
-//             UserBills.find().then(data =>
-//                 res.send(data)
-//             );
-//         });
-// });
-
 router.get('/', auth.verify, (req, res) => {
     Users.find().then(data => {
         res.send(data);

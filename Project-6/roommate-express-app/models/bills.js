@@ -6,9 +6,9 @@ const BillsSchema = new Schema({
     name: String,
     amount: Number,
     dueDate: Date,
-    status: {type: String, default: 'Unpaid'},
     isNecessity: Boolean,
-    users: [{type: Schema.Types.ObjectId, ref: users}]
+    paidUsers: [{ type: Schema.Types.ObjectId, ref: users }],
+    unpaidUsers: [{ type: Schema.Types.ObjectId, ref: users }]
 });
 
 module.exports = mongoose.model('bills', BillsSchema);
