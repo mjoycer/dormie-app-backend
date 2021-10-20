@@ -22,33 +22,42 @@ router.post('/email-exists', (req, res) => {
 });
 
 router.post('/register', async (req, res) => {
-    let hashedPwd = await bcrypt.hash(req.body.password, 10);
+    try {
+        let hashedPwd = await bcrypt.hash(req.body.password, 10);
+        let user = {
+            name: req.body.name,
+            email: req.body.email,
+            password: hashedPwd
+        }
 
-    let user = {
-        name: req.body.name,
-        email: req.body.email,
-        password: hashedPwd
+        let newUser = new Users(user);
+        newUser.save().then(data => {
+            res.send('User has been created.');
+        });
+    } catch {
+        console.log(err);
     }
 
-    let newUser = new Users(user);
-    newUser.save().then(data => {
-        res.send('User has been created.');
-    });
 });
 
 router.post('/login', async (req, res) => {
-    let user = await Users.findOne({ email: req.body.email });
+    try {
 
-    if (user) {
-        let match = await bcrypt.compare(req.body.password, user.password);
-        if (match) {
-            res.send({ auth: auth.createAccessToken(user) });
-            console.log('Login succesful');
+        let user = await Users.findOne({ email: req.body.email });
+
+        if (user) {
+            let match = await bcrypt.compare(req.body.password, user.password);
+            if (match) {
+                res.send({ auth: auth.createAccessToken(user) });
+                console.log('Login succesful');
+            } else {
+                res.send({ error: 'Invalid Login' });
+            }
         } else {
-            res.send({ error: 'Invalid Login' });
+            res.send({ error: 'Email not found' });
         }
-    } else {
-        res.send({ error: 'Email not found' });
+    } catch {
+        console.log(err);
     }
 });
 
