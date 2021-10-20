@@ -14,7 +14,13 @@ mongoose.connect('mongodb+srv://uplift_joyce2021:uplift2021@cluster0.3amhf.mongo
         useUnifiedTopology: true
     });
 
-app.use(cors());
+const corsOptions = {
+    origin: 'https://mjoycer-dormie-backend.herokuapp.com',
+    optionsSuccessStatus: 200
+}
+app.use(cors(corsOptions));
+app.options('*', cors());
+
 const UsersRouter = require('./routes/users');
 const NotesRouter = require('./routes/notes');
 const ChoresRouter = require('./routes/chores');
