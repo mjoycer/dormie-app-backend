@@ -15,7 +15,7 @@ mongoose.connect('mongodb+srv://uplift_joyce2021:uplift2021@cluster0.3amhf.mongo
     });
 
 const corsOptions = {
-    origin: 'https://mjoycer-dormie-backend.herokuapp.com',
+    origin: '*',
     optionsSuccessStatus: 200
 }
 app.use(cors(corsOptions));
