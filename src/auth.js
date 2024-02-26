@@ -1,18 +1,19 @@
-const jwt = require('jsonwebtoken');
+import jsonwebtoken from 'jsonwebtoken';
+
 const secret = process.env.JWT_KEY || 'lovesong';
 
-const createAccessToken = user => {
+export const createAccessToken = user => {
     let data = {
         id: user.id,
         email: user.email,
     }
 
-    return jwt.sign(data, secret);
+    return jsonwebtoken.sign(data, secret);
 }
 
-const decode = (token) => {
+export const decode = (token) => {
     if (typeof token !== 'undefined') {
-        jwt.verify(token, secret, (err, data) => {
+        jsonwebtoken.verify(token, secret, (err, data) => {
             return err ? null : jwt.decode(token, { complete: true }).payload
         });
     } else {
@@ -20,13 +21,13 @@ const decode = (token) => {
     }
 }
 
-const verify = (req, res, next) => {
+export const verify = (req, res, next) => {
     if (!req.headers.authorization) {
         res.send('No token');
     } else {
         let token = req.headers.authorization.split(" ")[1];
         if (typeof (token) !== 'undefined') {
-            jwt.verify(token, secret, (err, decoded) => {
+            jsonwebtoken.verify(token, secret, (err, decoded) => {
                 req.body.id = decoded.id;
                 return err ? res.send("Invalid token") : next();
             });
@@ -35,9 +36,8 @@ const verify = (req, res, next) => {
         }
     }
 }
-
-module.exports = {
-    createAccessToken,
-    decode,
-    verify
-};
+// module.exports = {
+//     createAccessToken,
+//     decode,
+//     verify
+// };
