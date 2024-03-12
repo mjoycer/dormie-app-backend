@@ -10,8 +10,9 @@ import './src/strategies/local-strategy.mjs'
 
 const app = express();
 const port = process.env.PORT || 8000;
+const uri = 'mongodb+srv://uplift_joyce2021:QjqRwZfzP7Ax5Wbo@atlascluster.lfwmsul.mongodb.net/?retryWrites=true&w=majority&appName=AtlasCluster'
 
-mongoose.connect('mongodb://localhost:27017/',
+mongoose.connect(uri,
 {
     useNewUrlParser: true,
     useUnifiedTopology: true

@@ -29,54 +29,36 @@ router.get('/', async (req, res) => {
     });
 });
 
-router.post('/email-exists', checkSchema(createUserValidationSchema), async (req, res) => {
+// router.post('/email-exists', checkSchema(createUserValidationSchema), async (req, res) => {
+//     const result = validationResult(req);
+//     console.log(result);
+
+//     const data = matchedData(req);
+//     console.log(data);
+//     await Users.findOne({ email: req.body.email }).then(data => {
+//         if (data) {
+//             res.send(true);
+//         } else {
+//             res.send(false);
+//         }
+//     });
+// });
+
+router.post('/register', checkSchema(createUserValidationSchema), (req, res) => {
     const result = validationResult(req);
-    console.log(result);
+    if(!result.isEmpty()) return res.status(400).send({errors: result.array()});
 
     const data = matchedData(req);
-    console.log(data);
-    await Users.findOne({ email: req.body.email }).then(data => {
-        if (data) {
-            res.send(true);
-        } else {
-            res.send(false);
-        }
-    });
-});
+    const saltRounds = 10;
+    let hashedPwd = bcrypt.hashSync(data.password, saltRounds);
+    data.password = hashedPwd;
 
-router.post('/register', async (req, res) => {
-    let hashedPwd = await bcrypt.hash(req.body.password, 10);
-
-    let user = {
-        name: req.body.name,
-        email: req.body.email,
-        password: hashedPwd
-    }
-
-    let newUser = new Users(user);
+    let newUser = new Users(data);
     newUser.save().then(data => {
-        res.send('User has been created.');
+        res.status(201).send('User has been created.');
     });
 });
 
-router.post('/login', async (req, res) => {
-    let user = await Users.findOne({ email: req.body.email });
-    
-    if (user) {
-        let match = await bcrypt.compare(req.body.password, user.password);
-        if (match) {
-            const auth = createAccessToken(user);
-            req.session.user = user;
-            console.log('Login succesful');
-            console.log(req.session.user);
-            return res.send({ auth: auth, user: user });
-        } else {
-            return res.status(401).send({ error: 'Invalid Login' });
-        }
-    } else {
-       return res.send({ error: 'Email not found' });
-    }
-});
 
 router.get('/status', (req, res) => {
     return req.session.user 
