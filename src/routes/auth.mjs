@@ -22,4 +22,11 @@ router.post('/login', async (req, res) => {
     }
 });
 
+router.get('/status', (req, res) => {
+    return req.session.user 
+    ? res.status(200).send(req.session.user) 
+    : res.status(401).send({msg: "Not authenticated."})
+    
+})
+
 export default router;

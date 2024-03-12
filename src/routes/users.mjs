@@ -17,32 +17,11 @@ router.get('/', async (req, res) => {
         }
         console.log(sessionData);
     });
-    // const result = validationResult(req);
-    // if(!result.isEmpty()) return res.status(400).send({ errors: result.array() });
 
-    // const getUsers = await Users.findOne({ email: value });
-    // if(!getUsers) return res.status(404).send('User not found.');
-
-    // return res.status(200).send(getUsers);
     Users.find().then(data => {
         res.status(200).send(data);
     });
 });
-
-// router.post('/email-exists', checkSchema(createUserValidationSchema), async (req, res) => {
-//     const result = validationResult(req);
-//     console.log(result);
-
-//     const data = matchedData(req);
-//     console.log(data);
-//     await Users.findOne({ email: req.body.email }).then(data => {
-//         if (data) {
-//             res.send(true);
-//         } else {
-//             res.send(false);
-//         }
-//     });
-// });
 
 router.post('/register', checkSchema(createUserValidationSchema), async(req, res) => {
     const result = validationResult(req);
@@ -59,17 +38,10 @@ router.post('/register', checkSchema(createUserValidationSchema), async(req, res
             res.status(201).send('User has been created.');
         });
     } catch(err) {
-        return res.status(403).send(err.message)
+        return res.status(400).send({err: err.message})
     }
 });
 
-
-router.get('/status', (req, res) => {
-    return req.session.user 
-    ? res.status(200).send(req.session.user) 
-    : res.status(401).send({msg: "Not authenticated."})
-    
-})
 
 
 export default router;
