@@ -44,7 +44,7 @@ router.get('/', async (req, res) => {
 //     });
 // });
 
-router.post('/register', checkSchema(createUserValidationSchema), (req, res) => {
+router.post('/register', checkSchema(createUserValidationSchema), async(req, res) => {
     const result = validationResult(req);
     if(!result.isEmpty()) return res.status(400).send({errors: result.array()});
 
@@ -54,9 +54,13 @@ router.post('/register', checkSchema(createUserValidationSchema), (req, res) => 
     data.password = hashedPwd;
 
     let newUser = new Users(data);
-    newUser.save().then(data => {
-        res.status(201).send('User has been created.');
-    });
+    try {
+        await newUser.save().then(data => {
+            res.status(201).send('User has been created.');
+        });
+    } catch(err) {
+        return res.status(403).send(err.message)
+    }
 });
 
 
