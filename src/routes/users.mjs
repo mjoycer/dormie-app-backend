@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt';
 import { verify, createAccessToken } from '../auth.js'
 import { query, validationResult, checkSchema, matchedData } from 'express-validator';
 import { createUserValidationSchema } from '../utils/validationSchemas.mjs';
+import { hashPassword } from '../utils/helpers.mjs';
 
 
 const router = Router();
@@ -28,8 +29,7 @@ router.post('/register', checkSchema(createUserValidationSchema), async(req, res
     if(!result.isEmpty()) return res.status(400).send({errors: result.array()});
 
     const data = matchedData(req);
-    const saltRounds = 10;
-    let hashedPwd = bcrypt.hashSync(data.password, saltRounds);
+    const hashedPwd = hashPassword(data.password);
     data.password = hashedPwd;
 
     let newUser = new Users(data);
