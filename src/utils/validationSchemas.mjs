@@ -39,3 +39,17 @@ export const userLoginValidationSchema = {
     }
   }
 }
+
+export const createNoteSchema = {
+  message: {
+    isLength: {
+      options: {
+        max: 140
+      },
+      errorMessage: 'Note should not have more than 140 characters.'
+    },
+    isString: {
+      errorMessage: 'Note should be a string.'
+    }
+  }
+}
